@@ -19,6 +19,12 @@ object CityMapper {
         return DBCity(city.id, city.name, city.countryCode)
     }
 
+
+    @JvmStatic
+    fun toDBCity(city: com.nikita.bulygin.weatherapp.data.network.pojo.City): DBCity {
+        return DBCity(city.id, city.name, city.country)
+    }
+
     @JvmStatic
     fun fromArrayDBCities(array: List<DBCity>): List<City> {
         val resultArry = ArrayList<City>(array.size)
@@ -30,6 +36,15 @@ object CityMapper {
 
     @JvmStatic
     fun toArrayDBCities(array: List<City>): List<DBCity> {
+        val resultArry = ArrayList<DBCity>(array.size)
+        for (city in array) {
+            resultArry.add(toDBCity(city))
+        }
+        return resultArry
+    }
+
+    @JvmStatic
+    fun toArrayDBCitiesFromPojo(array: List<com.nikita.bulygin.weatherapp.data.network.pojo.City>): List<DBCity> {
         val resultArry = ArrayList<DBCity>(array.size)
         for (city in array) {
             resultArry.add(toDBCity(city))

@@ -14,6 +14,9 @@ import io.reactivex.Single;
 @Dao
 public abstract class CityDao {
 
+    @Query("SELECT * from DBCity")
+    public abstract Single<List<DBCity>> getAllCities();
+
     public Single<List<DBCity>> getCityWithPrefix(String prefix) {
         return getCityWithPrefixProtected(prefix + "%");
     }
@@ -21,7 +24,10 @@ public abstract class CityDao {
     @Query("SELECT * from DBCity where name like :s")
     protected abstract Single<List<DBCity>> getCityWithPrefixProtected(String s);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insertCities(DBCity... cities);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertCities(List<DBCity> cities);
+
+    @Query("SELECT count(*) from DBCity")
+    public abstract int getCityCount();
 }

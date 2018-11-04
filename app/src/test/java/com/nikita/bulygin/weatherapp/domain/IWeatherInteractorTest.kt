@@ -2,9 +2,9 @@ package com.nikita.bulygin.weatherapp.domain
 
 import com.nikita.bulygin.weatherapp.domain.entities.City
 import com.nikita.bulygin.weatherapp.domain.entities.Weather
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.observers.TestObserver
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.SingleSubject
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -84,9 +84,9 @@ class WeatherRepositoryStub : IWeatherRepository {
     var lastGetWeatherFromCity: City? = null
 
 
-    private val weather = BehaviorSubject.create<DomainResponse<MutableList<Weather>>>();
+    private val weather = SingleSubject.create<DomainResponse<MutableList<Weather>>>();
 
-    override fun getWeatherFromCity(city: City?): Observable<DomainResponse<MutableList<Weather>>> {
+    override fun getWeatherFromCity(city: City?): Single<DomainResponse<MutableList<Weather>>> {
         this.lastGetWeatherFromCity = city
         return weather
     }
@@ -96,23 +96,23 @@ class WeatherRepositoryStub : IWeatherRepository {
     }
 
     fun postWeather(response: DomainResponse<MutableList<Weather>>) {
-        weather.onNext(response)
+        weather.onSuccess(response)
     }
 }
 
 class CityRepositoryStub : ICityRepository {
 
-    private val cities = BehaviorSubject.create<DomainResponse<MutableList<City>>>()
+    private val cities = SingleSubject.create<DomainResponse<MutableList<City>>>()
 
     var lastgetPossibleCitiesPrefix: String? = null
 
-    override fun getPossibleCities(prefix: String?): Observable<DomainResponse<MutableList<City>>> {
+    override fun getPossibleCities(prefix: String?): Single<DomainResponse<MutableList<City>>> {
         this.lastgetPossibleCitiesPrefix = prefix
         return cities
     }
 
     fun postCitiesList(list: DomainResponse<MutableList<City>>) {
-        cities.onNext(list)
+        cities.onSuccess(list)
     }
 
     fun postError(throwable: Throwable) {

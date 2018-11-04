@@ -7,6 +7,7 @@ import com.nikita.bulygin.weatherapp.domain.entities.Weather;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface IWeatherRepository {
 
@@ -16,5 +17,5 @@ public interface IWeatherRepository {
      * @param city weather required city
      * @return list of weather
      */
-    Observable<DomainResponse<List<Weather>>> getWeatherFromCity(City city);
+    Single<DomainResponse<List<Weather>>> getWeatherFromCity(City city);
 }

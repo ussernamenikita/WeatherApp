@@ -11,7 +11,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 
 public class CityRespositoryImpl implements ICityRepository {
@@ -24,7 +24,7 @@ public class CityRespositoryImpl implements ICityRepository {
     }
 
     @Override
-    public Observable<DomainResponse<List<City>>> getPossibleCities(String prefix) {
+    public Single<DomainResponse<List<City>>> getPossibleCities(String prefix) {
         return cityDao.
                 getCityWithPrefix(prefix).
                 map(CityMapper::fromArrayDBCities).

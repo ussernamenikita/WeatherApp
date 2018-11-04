@@ -19,10 +19,10 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.reactivex.Observable;
 import io.reactivex.Scheduler;
+import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.SingleSubject;
 
 
 public class WeatherRepositoryImpl implements IWeatherRepository {
@@ -32,7 +32,7 @@ public class WeatherRepositoryImpl implements IWeatherRepository {
     private Scheduler NET;
     private WeatherDao weatherDao;
     private HashMap<City, Disposable> disposableHashMap = new HashMap<>();
-    private Map<City, WeakReference<Observable<DomainResponse<List<Weather>>>>> lastRequestsResponse = new HashMap<>();
+    private Map<City, WeakReference<Single<DomainResponse<List<Weather>>>>> lastRequestsResponse = new HashMap<>();
 
     @Inject
     public WeatherRepositoryImpl(WeatherApi api,
@@ -46,28 +46,28 @@ public class WeatherRepositoryImpl implements IWeatherRepository {
     }
 
     @Override
-    public Observable<DomainResponse<List<Weather>>> getWeatherFromCity(City city) {
+    public Single<DomainResponse<List<Weather>>> getWeatherFromCity(City city) {
         //check if request with this city already executed
         if (isDisposed(city)) {
             //remove old request if exists
             lastRequestsResponse.remove(city);
-            Observable<List<DBWeather>> requestFromNetwork = updateFromNetwork(city);
-            Observable<DomainResponse<List<Weather>>> result = requestFromNetwork.
+            Single<List<DBWeather>> requestFromNetwork = updateFromNetwork(city);
+            Single<DomainResponse<List<Weather>>> result = requestFromNetwork.
                     map(list -> {
                         weatherDao.insert(list);
-                        List<Weather> resultList = WeatherMapper.mapListFromDb(weatherDao.getWeatherByCityBlocking(city.getId()));
-                        return new DomainResponse<>(resultList,ErrorCodes.NO_ERROR, DomainResponse.RESULT_STATUS.SUCCESS);
+                        List<Weather> resultList = WeatherMapper.mapListFromDb(list);
+                        return new DomainResponse<>(resultList, ErrorCodes.NO_ERROR, DomainResponse.RESULT_STATUS.SUCCESS);
                     }).onErrorReturn(throwable -> {
-                        List<Weather> list = WeatherMapper.mapListFromDb(weatherDao.getWeatherByCityBlocking(city.getId()));
-                        return new DomainResponse<>(list, ErrorCodes.NETWORK_ERROR, DomainResponse.RESULT_STATUS.ERROR);
-                    });
+                List<Weather> list = WeatherMapper.mapListFromDb(weatherDao.getWeatherByCityBlocking(city.getId()));
+                return new DomainResponse<>(list, ErrorCodes.NETWORK_ERROR, DomainResponse.RESULT_STATUS.ERROR);
+            });
             //cache request
             lastRequestsResponse.put(city, new WeakReference<>(result));
             return result;
         } else {
             //try to get cached value of last response
-            WeakReference<Observable<DomainResponse<List<Weather>>>> lastReference = lastRequestsResponse.get(city);
-            Observable<DomainResponse<List<Weather>>> result = lastReference == null ? null : lastReference.get();
+            WeakReference<Single<DomainResponse<List<Weather>>>> lastReference = lastRequestsResponse.get(city);
+            Single<DomainResponse<List<Weather>>> result = lastReference == null ? null : lastReference.get();
             return result == null ? weatherDao.
                     getWeatherByCity(city.getId()).
                     map(WeatherMapper::mapListFromDb).
@@ -83,12 +83,12 @@ public class WeatherRepositoryImpl implements IWeatherRepository {
      * @param city request weather city
      * @return observable with weather in city {@code city}
      */
-    private Observable<List<DBWeather>> updateFromNetwork(City city) {
-        BehaviorSubject<List<DBWeather>> subject = BehaviorSubject.create();
+    private Single<List<DBWeather>> updateFromNetwork(City city) {
+        SingleSubject<List<DBWeather>> subject = SingleSubject.create();
         Disposable disposable = api.getWeather5_3(city.getId(), appId)
                 .subscribeOn(NET)
                 .map(response -> WeatherMapper.map(response, city))
-                .subscribe(subject::onNext, subject::onError);
+                .subscribe(subject::onSuccess, subject::onError);
         disposableHashMap.put(city, disposable);
         return subject;
     }

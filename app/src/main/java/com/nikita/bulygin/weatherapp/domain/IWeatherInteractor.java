@@ -5,7 +5,7 @@ import com.nikita.bulygin.weatherapp.domain.entities.Weather;
 
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Class for work with weather
@@ -19,7 +19,7 @@ public interface IWeatherInteractor {
      * @param city what city is the weather for
      * @return list of the weather
      */
-    Observable<DomainResponse<List<Weather>>> getWeather(City city);
+    Single<DomainResponse<List<Weather>>> getWeather(City city);
 
     /**
      * Returns cities with specified prefix
@@ -27,5 +27,5 @@ public interface IWeatherInteractor {
      * @param prefix city prefix
      * @return list of city which name begins from {@code prefix}
      */
-    Observable<DomainResponse<List<City>>> getCitiesForPrefix(String prefix);
+    Single<DomainResponse<List<City>>> getCitiesForPrefix(String prefix);
 }

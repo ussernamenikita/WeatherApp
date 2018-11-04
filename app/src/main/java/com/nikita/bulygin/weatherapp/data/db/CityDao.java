@@ -8,23 +8,20 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 
 @Dao
 public abstract class CityDao {
 
-    @Query("SELECT * from DBCity")
-    public abstract Observable<List<DBCity>> getAllCities();
-
-    public Observable<List<DBCity>> getCityWithPrefix(String prefix) {
+    public Single<List<DBCity>> getCityWithPrefix(String prefix) {
         return getCityWithPrefixProtected(prefix + "%");
     }
 
     @Query("SELECT * from DBCity where name like :s")
-    protected abstract Observable<List<DBCity>> getCityWithPrefixProtected(String s);
+    protected abstract Single<List<DBCity>> getCityWithPrefixProtected(String s);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insertCities(DBCity ... cities);
+    public abstract void insertCities(DBCity... cities);
 
 }

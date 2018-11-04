@@ -16,7 +16,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 
 public class WeatherInteractorImpl implements IWeatherInteractor {
@@ -31,7 +31,7 @@ public class WeatherInteractorImpl implements IWeatherInteractor {
     }
 
     @Override
-    public Observable<DomainResponse<List<Weather>>> getWeather(City city) {
+    public Single<DomainResponse<List<Weather>>> getWeather(City city) {
         return weatherRepository.
                 getWeatherFromCity(city).
                 map(this::filterByDays);
@@ -41,7 +41,7 @@ public class WeatherInteractorImpl implements IWeatherInteractor {
     @NonNull
     @VisibleForTesting
     public DomainResponse<List<Weather>> filterByDays(@NonNull DomainResponse<List<Weather>> response) {
-        List<Weather> result = null;
+        List<Weather> result;
         if (response.getData() != null) {
             List<Weather> weathers = response.getData();
             result = new ArrayList<>(weathers.size());
@@ -86,17 +86,17 @@ public class WeatherInteractorImpl implements IWeatherInteractor {
     }
 
     @Override
-    public Observable<DomainResponse<List<City>>> getCitiesForPrefix(String prefix) {
+    public Single<DomainResponse<List<City>>> getCitiesForPrefix(String prefix) {
         return cityRepository
                 .getPossibleCities(prefix);
     }
 
 
     public static class Pair<T, E> {
-        public T first = null;
-        public E second = null;
+        T first = null;
+        E second = null;
 
-        public Pair(T first, E second) {
+        Pair(T first, E second) {
             this.first = first;
             this.second = second;
         }

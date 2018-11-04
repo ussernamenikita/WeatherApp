@@ -8,9 +8,11 @@ import com.nikita.bulygin.weatherapp.data.network.pojo.DailyWeatherResponse
 import com.nikita.bulygin.weatherapp.domain.entities.City
 import com.nikita.bulygin.weatherapp.domain.entities.Weather
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.SingleSubject
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotSame
 import org.junit.Before
@@ -82,11 +84,11 @@ class IWeatherRepositoryTest {
     fun getWeatherReturnCachedResponse() {
         val result = repository.getWeatherFromCity(city)
         val result2 = repository.getWeatherFromCity(city)
-        assertEquals(result,result2)
+        assertEquals(result, result2)
         weatherApiStub.onErrorWeather5_3(Throwable("test"))
         networkScheduler.triggerActions()
         val result3 = repository.getWeatherFromCity(city)
-        assertNotSame(result,result3)
+        assertNotSame(result, result3)
     }
 }
 
@@ -94,38 +96,26 @@ class WeatherDaoStub : WeatherDao() {
 
     var lastIdGetWeatherByCityBlocking: Int? = null
 
-    var blockingResult: MutableList<DBWeather>? = null
+    var blockingResult = ArrayList<DBWeather>()
 
     var lastIdFromGetWeatherByCity: Int? = null
 
-    val observableWeatherByCityID = BehaviorSubject.create<MutableList<DBWeather>>()
-
-    val allweather = BehaviorSubject.create<MutableList<DBWeather>>()
+    val observableWeatherByCityID = SingleSubject.create<MutableList<DBWeather>>()
 
     var lastInsertList: MutableList<DBWeather>? = null
-
-    var lastInsertArray: Array<out DBWeather?>? = null
 
     override fun getWeatherByCityBlocking(cityId_: Int): MutableList<DBWeather>? {
         this.lastIdGetWeatherByCityBlocking = cityId_
         return blockingResult
     }
 
-    override fun getWeatherByCity(cityId_: Int): Observable<MutableList<DBWeather>> {
+    override fun getWeatherByCity(cityId_: Int): Single<MutableList<DBWeather>> {
         this.lastIdFromGetWeatherByCity = cityId_
         return observableWeatherByCityID
     }
 
     override fun insert(weathers: MutableList<DBWeather>?) {
         this.lastInsertList = weathers
-    }
-
-    override fun insert(vararg weathers: DBWeather?) {
-        this.lastInsertArray = weathers
-    }
-
-    override fun getAllWeather(): Observable<MutableList<DBWeather>> {
-        return this.allweather
     }
 
 

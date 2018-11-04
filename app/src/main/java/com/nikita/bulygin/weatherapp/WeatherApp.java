@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import com.nikita.bulygin.weatherapp.di.components.AppComponent;
 import com.nikita.bulygin.weatherapp.di.components.DaggerAppComponent;
 
-public class WeatherApp extends android.app.Application{
+public class WeatherApp extends android.app.Application {
 
     @Nullable
     private AppComponent appComponent = null;
@@ -18,7 +18,7 @@ public class WeatherApp extends android.app.Application{
     }
 
     private void initiateAppComponent() {
-        if(appComponent == null) {
+        if (appComponent == null) {
             appComponent = DaggerAppComponent.
                     builder().
                     application(this).

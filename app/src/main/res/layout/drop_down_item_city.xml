@@ -3,5 +3,5 @@
     android:gravity="center"
     android:padding="@dimen/stadnard_little_margin"
     android:ellipsize="end"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content" />

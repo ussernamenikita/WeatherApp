@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class WeatherMapper {
 
+    private static final double KELIVN = 273.15;
 
     @NonNull
     public static Weather map(@NonNull DBWeather dbWeather) {
@@ -40,9 +41,9 @@ public class WeatherMapper {
             WeatherInfo weatherInfo = getFirstWeatherInfoFromWeatherDay(weatherForDay);
             DBWeather weather = new DBWeather(city.getId(),
                     weatherForDay.getDateUnix() * 1000L,
-                    mainData.getTemp(),
-                    mainData.getTempMin(),
-                    mainData.getTempMax(),
+                    mainData.getTemp()-KELIVN,
+                    mainData.getTempMin()-KELIVN,
+                    mainData.getTempMax()-KELIVN,
                     mainData.getPressure(),
                     mainData.getHumidity(),
                     weatherInfo == null ? "" : weatherInfo.getName(),

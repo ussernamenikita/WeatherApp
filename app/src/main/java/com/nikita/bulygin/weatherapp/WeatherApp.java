@@ -1,14 +1,15 @@
 package com.nikita.bulygin.weatherapp;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
+import com.nikita.bulygin.weatherapp.di.InjectableApplication;
 import com.nikita.bulygin.weatherapp.di.components.AppComponent;
 import com.nikita.bulygin.weatherapp.di.components.DaggerAppComponent;
 
-public class WeatherApp extends android.app.Application {
+public class WeatherApp extends android.app.Application implements InjectableApplication {
 
-    @Nullable
-    private AppComponent appComponent = null;
+
+    private AppComponent appComponent;
 
 
     @Override
@@ -24,5 +25,12 @@ public class WeatherApp extends android.app.Application {
                     application(this).
                     build();
         }
+    }
+
+
+    @NonNull
+    @Override
+    public AppComponent getAppComponent() {
+        return appComponent;
     }
 }

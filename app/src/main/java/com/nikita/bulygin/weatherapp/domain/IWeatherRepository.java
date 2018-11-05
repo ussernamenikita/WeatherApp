@@ -13,7 +13,7 @@ public interface IWeatherRepository {
 
 
     /**
-     * Return observable list of weather for specific city
+     * Return list of weather for specific city
      * @param city weather required city
      * @return list of weather
      */

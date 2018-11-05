@@ -34,13 +34,19 @@ public class WeatherInteractorImpl implements IWeatherInteractor {
     public Single<DomainResponse<List<Weather>>> getWeather(City city) {
         return weatherRepository.
                 getWeatherFromCity(city).
-                map(this::filterByDays);
+                map(this::groupByDays);
     }
 
 
+    /**
+     * Group all weather by day to one weather object.
+     * Do it for every day.
+     * @param response response with all weather
+     * @return response with grouped result
+     */
     @NonNull
     @VisibleForTesting
-    public DomainResponse<List<Weather>> filterByDays(@NonNull DomainResponse<List<Weather>> response) {
+    public DomainResponse<List<Weather>> groupByDays(@NonNull DomainResponse<List<Weather>> response) {
         List<Weather> result;
         if (response.getData() != null) {
             List<Weather> weathers = response.getData();
@@ -69,7 +75,7 @@ public class WeatherInteractorImpl implements IWeatherInteractor {
 
     /**
      * Return value with existing key
-     * or create new add to map and return in from function
+     * or create new one.
      *
      * @param time                key
      * @param allTemperatureInDay map

@@ -29,6 +29,7 @@ public abstract class AppModule {
     @Binds
     public abstract Context getAppContext(Application application);
 
+
     @Singleton
     @Binds
     public abstract IWeatherRepository getWeatherRepository(WeatherRepositoryImpl impl);

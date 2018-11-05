@@ -43,6 +43,11 @@ public class WeatherRepositoryImpl implements IWeatherRepository {
         this.NET = NET;
         this.weatherDao = weatherDao;
         this.appId = appId;
+        this.clearOldData();
+    }
+
+    private void clearOldData() {
+        NET.scheduleDirect(() -> weatherDao.deleteOlderThan(System.currentTimeMillis()));
     }
 
     @Override
@@ -70,6 +75,7 @@ public class WeatherRepositoryImpl implements IWeatherRepository {
             Single<DomainResponse<List<Weather>>> result = lastReference == null ? null : lastReference.get();
             return result == null ? weatherDao.
                     getWeatherByCity(city.getId()).
+                    subscribeOn(NET).
                     map(WeatherMapper::mapListFromDb).
                     map(list -> new DomainResponse<>(list, ErrorCodes.NO_ERROR, DomainResponse.RESULT_STATUS.SUCCESS)) : result;
         }

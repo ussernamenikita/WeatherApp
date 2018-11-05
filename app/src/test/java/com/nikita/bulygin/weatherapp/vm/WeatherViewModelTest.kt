@@ -39,7 +39,7 @@ class WeatherViewModelTest {
 
     private val successRepsponse = DomainResponse(mutableListOf(simpleWeather), ErrorCodes.NO_ERROR, DomainResponse.RESULT_STATUS.SUCCESS)
 
-    private val successCitiesResponse = DomainResponse(mutableListOf(simpleCity),ErrorCodes.NO_ERROR,DomainResponse.RESULT_STATUS.ERROR)
+    private val successCitiesResponse = DomainResponse(mutableListOf(simpleCity),ErrorCodes.NO_ERROR,DomainResponse.RESULT_STATUS.SUCCESS)
 
     private val nullableCitiesResponse = DomainResponse<MutableList<City>>(null,0,null)
 
@@ -52,6 +52,8 @@ class WeatherViewModelTest {
     @Before
     fun setUp() {
         viewModel = WeatherViewModel(weatherInteractor, uiScheduler, contextUtils)
+        contextUtils.stringWithVararg = "test"
+        contextUtils.stringWithoutParams = "test"
     }
     @Test
     fun bindViewCallUpdateUI() {
@@ -83,12 +85,13 @@ class WeatherViewModelTest {
     private fun checkViewStatus(success: DomainResponse.RESULT_STATUS) {
         assertNotNull(view.lastReceivedState)
         if(success == DomainResponse.RESULT_STATUS.SUCCESS){
-            assertTrue(TextUtils.isEmpty(view.lastReceivedState!!.currentError))
+            assertTrue(isEmpty(view.lastReceivedState!!.currentError))
         }else if(success == DomainResponse.RESULT_STATUS.ERROR){
-            assertFalse(TextUtils.isEmpty(view.lastReceivedState!!.currentError))
-
+            assertFalse(isEmpty(view.lastReceivedState!!.currentError))
         }
     }
+
+    private fun isEmpty(currentError: String?): Boolean  = currentError == null || "" == currentError
 
 
     @Test
@@ -143,18 +146,20 @@ class WeatherViewModelTest {
 
     private fun checkViewReceivedDataThenCitiesResponse(response: DomainResponse<MutableList<City>>?, throwable: Throwable?) {
         viewModel.bindView(view)
-        viewModel.onCitySelected(city)
+        viewModel.onCityNameChanged(city.name)
         view.lastReceivedState = null
         if (response != null) {
             weatherInteractor.citiesForPrefixResponse.onSuccess(response)
+            uiScheduler.triggerActions()
             if(response.status != null) {
                 val requestStatus : DomainResponse.RESULT_STATUS = response.status ?: return
                 checkViewStatus(requestStatus)
             }
         } else if(throwable != null){
             weatherInteractor.citiesForPrefixResponse.onError(throwable)
+            uiScheduler.triggerActions()
         }
-        uiScheduler.triggerActions()
+
         assertNotNull(view.lastReceivedState)
     }
 
@@ -173,14 +178,15 @@ class WeatherViewModelTest {
         view.lastReceivedState = null
         if (response != null) {
             weatherInteractor.weatherResponse.onSuccess(response)
+            uiScheduler.triggerActions()
             if(response.status != null) {
                 val requestStatus : DomainResponse.RESULT_STATUS = response.status ?: return
                 checkViewStatus(requestStatus)
             }
         } else if(throwable != null){
             weatherInteractor.weatherResponse.onError(throwable)
+            uiScheduler.triggerActions()
         }
-        uiScheduler.triggerActions()
         assertNotNull(view.lastReceivedState)
     }
 

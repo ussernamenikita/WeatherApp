@@ -7,7 +7,6 @@ import com.nikita.bulygin.weatherapp.R
 import com.nikita.bulygin.weatherapp.domain.DomainResponse
 import com.nikita.bulygin.weatherapp.domain.IWeatherInteractor
 import com.nikita.bulygin.weatherapp.domain.entities.City
-import com.nikita.bulygin.weatherapp.domain.entities.Weather
 import com.nikita.bulygin.weatherapp.ui.IWeatherView
 import com.nikita.bulygin.weatherapp.ui.WeatherByCityViewState
 import com.nikita.bulygin.weatherapp.utils.ContextUtils
@@ -49,11 +48,14 @@ class WeatherViewModel(private var weatherInteractor: IWeatherInteractor,
         if (this.lastSelectedCitySubscription != null) {
             allSubscriptions.remove(this.lastSelectedCitySubscription ?: return)
         }
+        currentViewState = currentViewState.copy(logingInProgress = true)
+        updateUI()
         this.lastSelectedCitySubscription = this.weatherInteractor.
                 getWeather(city).
                 observeOn(uiScheduler)
                 .subscribe({
-                    currentViewState = currentViewState.copy(weatherList = it.data ?: ArrayList<Weather>())
+                    val arrayList = it.data ?: ArrayList()
+                    currentViewState = currentViewState.copy(weatherList = arrayList.sortedBy { it.date }, logingInProgress = false)
                     if (it?.status == DomainResponse.RESULT_STATUS.ERROR) {
                         showLodingWeatherError(city)
                     } else {
@@ -66,7 +68,7 @@ class WeatherViewModel(private var weatherInteractor: IWeatherInteractor,
     }
 
     private fun showLodingWeatherError(city: City) {
-        currentViewState = currentViewState.copy(currentError = contextUtils.getString(R.string.weather_by_city_weather_loading_error_text, city.name))
+        currentViewState = currentViewState.copy(currentError = contextUtils.getString(R.string.weather_by_city_weather_loading_error_text, city.name), logingInProgress = false)
         updateUI()
     }
 

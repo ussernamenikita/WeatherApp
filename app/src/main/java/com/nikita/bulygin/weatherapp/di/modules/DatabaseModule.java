@@ -19,9 +19,8 @@ import dagger.Provides;
 public class DatabaseModule {
 
     @Provides
-    @Named(DIConstants.APP)
     @Singleton
-    public static Database getDatabase(Context application) {
+    public static Database getDatabase(@Named(DIConstants.APP) Context application) {
         return Room.
                 databaseBuilder(application, Database.class, "Database").
                 fallbackToDestructiveMigration().
@@ -32,6 +31,7 @@ public class DatabaseModule {
     public static WeatherDao getWeatherDao(Database database){
         return database.getWeatherDao();
     }
+
     @Provides
     public static CityDao getCityDao(Database database){
         return database.getCityDao();

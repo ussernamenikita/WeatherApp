@@ -23,4 +23,6 @@ public abstract class WeatherDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract void insert(List<DBWeather> weathers);
 
+    @Query("DELETE from DBWeather WHERE date < :l")
+    public abstract void deleteOlderThan(long l);
 }

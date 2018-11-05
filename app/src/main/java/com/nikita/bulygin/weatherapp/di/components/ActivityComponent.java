@@ -1,25 +1,15 @@
 package com.nikita.bulygin.weatherapp.di.components;
 
-import android.app.Activity;
-
 import com.nikita.bulygin.weatherapp.di.ActivityScope;
 import com.nikita.bulygin.weatherapp.di.modules.ActivityModule;
+import com.nikita.bulygin.weatherapp.di.modules.WeatherByCityModule;
 
-import dagger.BindsInstance;
-import dagger.Component;
+import dagger.Subcomponent;
 
 
-@Component(dependencies = AppComponent.class, modules = ActivityModule.class)
+@Subcomponent(modules = ActivityModule.class)
 @ActivityScope
 public interface ActivityComponent {
 
-    @Component.Builder
-    interface Builder {
-        ActivityComponent build();
-
-        @BindsInstance
-        ActivityComponent.Builder activity(Activity activity);
-
-        ActivityComponent.Builder appComponent(AppComponent component);
-    }
+    WeatherByCityComponent getWeatherByCityComponent(WeatherByCityModule module);
 }

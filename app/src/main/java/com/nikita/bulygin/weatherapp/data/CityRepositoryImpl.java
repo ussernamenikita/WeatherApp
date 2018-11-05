@@ -30,6 +30,7 @@ import io.reactivex.Single;
 public class CityRepositoryImpl implements ICityRepository {
 
     private static final String TAG = "CityRepositoryImpl";
+    private final Scheduler IOscheDuler;
 
     private CityDao cityDao;
 
@@ -39,6 +40,7 @@ public class CityRepositoryImpl implements ICityRepository {
                               Gson gson,
                               @Named(DIConstants.IO) Scheduler scheduler) {
         this.cityDao = cityDao;
+        this.IOscheDuler = scheduler;
         scheduler.createWorker().schedule(() -> populateCities(context, gson));
     }
 
@@ -50,7 +52,7 @@ public class CityRepositoryImpl implements ICityRepository {
         }
         InputStream is = null;
         try {
-            is = context.getAssets().open("file_name.json");
+            is = context.getAssets().open("city.list.json");
             JsonReader jsonReader = new JsonReader(new InputStreamReader(is));
             TypeToken token = new TypeToken<List<com.nikita.bulygin.weatherapp.data.network.pojo.City>>() {
             };
@@ -76,6 +78,7 @@ public class CityRepositoryImpl implements ICityRepository {
     public Single<DomainResponse<List<City>>> getPossibleCities(String prefix) {
         return cityDao.
                 getCityWithPrefix(prefix).
+                subscribeOn(IOscheDuler).
                 map(CityMapper::fromArrayDBCities).
                 map(cities -> new DomainResponse<>(cities, ErrorCodes.NO_ERROR, DomainResponse.RESULT_STATUS.SUCCESS));
     }

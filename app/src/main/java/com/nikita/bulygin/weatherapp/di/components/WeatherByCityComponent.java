@@ -1,24 +1,16 @@
 package com.nikita.bulygin.weatherapp.di.components;
 
-import android.support.v4.app.Fragment;
-
 import com.nikita.bulygin.weatherapp.di.FragmentScope;
 import com.nikita.bulygin.weatherapp.di.modules.WeatherByCityModule;
+import com.nikita.bulygin.weatherapp.ui.WeatherFragment;
 
-import dagger.BindsInstance;
-import dagger.Component;
+import dagger.Subcomponent;
 
 @FragmentScope
-@Component(dependencies = ActivityComponent.class, modules = WeatherByCityModule.class)
+@Subcomponent(modules = WeatherByCityModule.class)
 public interface WeatherByCityComponent {
 
-    @Component.Builder
-    interface Builder {
-        WeatherByCityComponent build();
+    void inject(WeatherFragment fragment);
 
-        @BindsInstance
-        WeatherByCityComponent.Builder fragment(Fragment fragment);
 
-        WeatherByCityComponent.Builder activityComponent(ActivityComponent component);
-    }
 }

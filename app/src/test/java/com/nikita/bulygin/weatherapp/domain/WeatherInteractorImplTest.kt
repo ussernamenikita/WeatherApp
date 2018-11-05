@@ -34,7 +34,7 @@ class WeatherInteractorImplTest {
         val w3_1 = Weather(Date(24 * 2 * 3600 * 1000 + 1), 100.0)
         val w3_2 = Weather(Date(24 * 2 * 3600 * 1000 + 3 * 3600 * 1000), 80.0)
         val response = DomainResponse(listOf(w1_1, w3_2, nextDay_1, w1_2, nextDay_2, w1_3, w3_1),ErrorCodes.NO_ERROR,DomainResponse.RESULT_STATUS.SUCCESS)
-        val result = interactorImpl.filterByDays(response)
+        val result = interactorImpl.groupByDays(response)
         val weather1Result = Weather(Date(0),70.0)
         val weather2Result = Weather(Date(24 * 3600 * 1000 ),55.0)
         val weather3Result = Weather(Date(24 * 2 * 3600 * 1000 ),90.0)

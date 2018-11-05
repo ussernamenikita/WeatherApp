@@ -94,6 +94,10 @@ class IWeatherRepositoryTest {
 
 class WeatherDaoStub : WeatherDao() {
 
+    override fun deleteOlderThan(l: Long) {
+
+    }
+
     var lastIdGetWeatherByCityBlocking: Int? = null
 
     var blockingResult = ArrayList<DBWeather>()

@@ -11,4 +11,5 @@ public class DIConstants {
     public static final String APP = "APPLICATION";
     public static final String IO = "InputOutput";
     public static final String SERVER_PATH = "SERVER_PATH";
+    public static final String UI = "UI";
 }

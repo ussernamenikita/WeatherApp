@@ -6,4 +6,6 @@
     <string name="date_label_text">Date :</string>
     <string name="temperature_label_text">Temperature :</string>
     <string name="temperature_in_celsius_template">%1$s °C</string>
+    <string name="weather_by_city_weather_loading_error_text">Error while try loading weather for city %1$s</string>
+    <string name="weather_by_city_cities_loading_error_text">Error while try loading cities with prefix %1$s</string>
 </resources>

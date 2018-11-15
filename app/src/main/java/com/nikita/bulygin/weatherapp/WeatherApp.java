@@ -1,6 +1,8 @@
 package com.nikita.bulygin.weatherapp;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDex;
 
 import com.nikita.bulygin.weatherapp.di.InjectableApplication;
 import com.nikita.bulygin.weatherapp.di.components.AppComponent;
@@ -11,6 +13,12 @@ public class WeatherApp extends android.app.Application implements InjectableApp
 
     private AppComponent appComponent;
 
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     public void onCreate() {
